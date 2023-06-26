@@ -2,21 +2,13 @@
 
 check_factor() {
     if [ $# -ne 3 ]; then
-        args=("$@")
-        count=0
-        num2=1
-        for a in "${args[@]}"; do
-            if [ $count -gt 1 ]; then
-                num2=$((a * num2))
-            fi
-            count=$((count + 1))
-        done
+        num2=$(echo "${@:2}" | tr ' ' '*' | bc)
     else
         num2=$3
     fi
 
     num1=$2
-    num=${1//:/=}
+    num=$(echo "$1" | tr ':' '=')
 
     if ((num2 > num1)); then
         numcp=$num1
@@ -28,11 +20,11 @@ check_factor() {
 }
 
 if [ $# -ne 1 ]; then
-    echo 'Usage: factors <file>'
+    echo 'Usage: rsa <file>'
     exit 1
 else
     while read -r i; do
         result=$(factor "$i")
         check_factor $result
-    done < <(cat "$1")
+    done < "$1"
 fi
